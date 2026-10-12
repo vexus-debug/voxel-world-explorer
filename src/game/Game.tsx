@@ -387,7 +387,7 @@ function Player({ zt }: { zt: React.MutableRefObject<ZombieTarget> }) {
         breakKey.current = key;
         ui.breakProgress = 0;
       }
-      const def = BLOCKS[t.id]!;
+      const def = BLOCKS[t.id ?? 0]!;
       const item = HOTBAR[ui.selected]!;
       const right = item.kind === "tool" && def.tool === item.tool;
       const time = def.hardness * (right ? 0.25 : 1);
