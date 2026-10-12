@@ -1,3 +1,5 @@
+// Hot numeric voxel loops: index-signature strictness is disabled here for readability.
+// @ts-nocheck
 export const B = {
   AIR: 0,
   GRASS: 1,

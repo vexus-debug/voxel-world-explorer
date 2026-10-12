@@ -46,8 +46,8 @@ function Chunks({ material }: { material: THREE.Material }) {
   const list = useMemo(() => {
     const out: [number, number][] = [];
     for (let dz = -RADIUS; dz <= RADIUS; dz++)
-      for (let dx = -RADIUS; dx <= RADIUS; dx++) if (dx * dx + dz * dz <= RADIUS * RADIUS + 1) out.push([center[0] + dx, center[1] + dz]);
-    return out.sort((a, b) => Math.hypot(a[0] - center[0], a[1] - center[1]) - Math.hypot(b[0] - center[0], b[1] - center[1]));
+      for (let dx = -RADIUS; dx <= RADIUS; dx++) if (dx * dx + dz * dz <= RADIUS * RADIUS + 1) out.push([center[0]! + dx, center[1]! + dz]);
+    return out.sort((a, b) => Math.hypot(a[0] - center[0]!, a[1] - center[1]!) - Math.hypot(b[0] - center[0]!, b[1] - center[1]!));
   }, [center]);
   return (
     <>
@@ -168,8 +168,8 @@ function Zombies({ target }: { target: React.MutableRefObject<ZombieTarget> }) {
         grp.position.copy(z.pos);
         grp.rotation.y = Math.atan2(dx, dz);
         const legSwing = Math.sin(now * 8) * 0.5 * (speed ? 1 : 0);
-        grp.children[2].rotation.x = legSwing;
-        grp.children[3].rotation.x = -legSwing;
+        grp.children[2]!.rotation.x = legSwing;
+        grp.children[3]!.rotation.x = -legSwing;
       }
     }
     target.current.zombies = g.zombies;
@@ -266,7 +266,7 @@ function Player({ zt }: { zt: React.MutableRefObject<ZombieTarget> }) {
           }
         }
         if (best && (!target.current || target.current.dist > bestD)) {
-          const item = HOTBAR[ui.selected];
+          const item = HOTBAR[ui.selected]!;
           best.hp -= item.kind === "tool" ? item.damage : 2;
           best.hurt = 0.4;
           best.vel.set(dir.x * 7, 5, dir.z * 7);
@@ -308,7 +308,7 @@ function Player({ zt }: { zt: React.MutableRefObject<ZombieTarget> }) {
 
   function place() {
     const t = target.current;
-    const item = HOTBAR[ui.selected];
+    const item = HOTBAR[ui.selected]!;
     if (!t || item.kind !== "block" || (ui.counts[item.block] ?? 0) <= 0) return;
     const [x, y, z] = t.prev;
     if (g.world.get(x, y, z) !== 0) return;
@@ -317,7 +317,7 @@ function Player({ zt }: { zt: React.MutableRefObject<ZombieTarget> }) {
       g.world.set(x, y, z, 0);
       return;
     }
-    ui.counts[item.block]--;
+    ui.counts[item.block] = (ui.counts[item.block] ?? 1) - 1;
     emit();
   }
 
@@ -333,16 +333,16 @@ function Player({ zt }: { zt: React.MutableRefObject<ZombieTarget> }) {
     const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
     const wish = new THREE.Vector3();
     if (active) {
-      if (k.KeyW) wish.add(fwd);
-      if (k.KeyS) wish.sub(fwd);
-      if (k.KeyD) wish.add(right);
-      if (k.KeyA) wish.sub(right);
+      if (k["KeyW"]) wish.add(fwd);
+      if (k["KeyS"]) wish.sub(fwd);
+      if (k["KeyD"]) wish.add(right);
+      if (k["KeyA"]) wish.sub(right);
     }
-    if (wish.lengthSq()) wish.normalize().multiplyScalar(k.ShiftLeft ? 6.2 : 4.3);
+    if (wish.lengthSq()) wish.normalize().multiplyScalar(k["ShiftLeft"] ? 6.2 : 4.3);
     const blend = 1 - Math.exp(-(onGround.current ? 14 : 3) * dt);
     g.vel.x += (wish.x - g.vel.x) * blend;
     g.vel.z += (wish.z - g.vel.z) * blend;
-    if (active && k.Space && onGround.current) g.vel.y = 8.6;
+    if (active && k["Space"] && onGround.current) g.vel.y = 8.6;
     g.vel.y = Math.max(-50, g.vel.y - 28 * dt);
     const res = moveEntity(g.world, g.pos, g.vel, dt, 0.3, 1.8);
     onGround.current = res.onGround;
@@ -387,8 +387,8 @@ function Player({ zt }: { zt: React.MutableRefObject<ZombieTarget> }) {
         breakKey.current = key;
         ui.breakProgress = 0;
       }
-      const def = BLOCKS[t.id];
-      const item = HOTBAR[ui.selected];
+      const def = BLOCKS[t.id]!;
+      const item = HOTBAR[ui.selected]!;
       const right = item.kind === "tool" && def.tool === item.tool;
       const time = def.hardness * (right ? 0.25 : 1);
       ui.breakProgress += dt / time;

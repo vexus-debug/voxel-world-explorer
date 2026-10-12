@@ -26,7 +26,7 @@ function clockLabel(t: number) {
 
 export function HUD() {
   const ui = useUI();
-  const item = HOTBAR[ui.selected];
+  const item = HOTBAR[ui.selected]!;
   const isNight = Math.sin(ui.time * Math.PI * 2) < -0.1;
   const lock = () => getGame().controls?.lock();
 
